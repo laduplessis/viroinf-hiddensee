@@ -30,7 +30,7 @@ Dataset is included as an example dataset with [BEAST 2](https://beast2.org). Nu
 
 
 ## HIV-1 criminal case dataset
-Dataset from Metzker et al ([PNAS 2002](http://www.pnas.org/content/99/22/14292)). Downloaded from [https://pubmed.ncbi.nlm.nih.gov/12388776/](https://pubmed.ncbi.nlm.nih.gov/12388776/) for both env (PopSet 24210023; https://www.ncbi.nlm.nih.gov/popset/24210023) and pol (PopSet 24209939; https://www.ncbi.nlm.nih.gov/popset/24209939) datasets.
+Dataset from Metzker et al ([PNAS 2002](http://www.pnas.org/content/99/22/14292)). Downloaded from [https://pubmed.ncbi.nlm.nih.gov/12388776/](https://pubmed.ncbi.nlm.nih.gov/12388776/) for both env ([PopSet 24210023](https://www.ncbi.nlm.nih.gov/popset/24210023)) and pol ([PopSet 24209939](https://www.ncbi.nlm.nih.gov/popset/24209939)) datasets.
 
 
 ### Env dataset 
