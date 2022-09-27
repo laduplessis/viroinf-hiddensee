@@ -33,9 +33,9 @@ Please install the following software on your laptop before the start of the wor
 
 |      | Wednesday | Thursday |
 |------|-----------|----------|
-|09:00 |           | Introduction to Bayesian phylodynamics with BEAST2 |
+|09:00 | Lecture   | Introduction to Bayesian phylodynamics with BEAST2 |
 |10:00 |           | Tutorial: Molecular clock dating in BEAST2 |
-|11:00 |           | Clocks, priors and tree-priors             |
+|11:00 | Tutorial  | Clocks, priors and tree-priors             |
 |12:00 |           |          |
 |13:00 | Lunch     | Lunch    |
 |14:00 |           |          |
