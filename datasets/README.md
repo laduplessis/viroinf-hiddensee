@@ -54,11 +54,11 @@ Dataset from Metzker et al ([PNAS 2002](http://www.pnas.org/content/99/22/14292)
 
 
 ### Env dataset 
-Dataset of 132 gp120 sequences. Aligned in AliView using MUSCLE, trimmed ends and insertions in only in one sequence and renamed sequence headers. Resulting alignment is 820 bp long.
+Dataset of 132 gp120 gene sequences. Aligned in AliView using MUSCLE, trimmed ends and insertions in only in one sequence and renamed sequence headers. Resulting alignment is 820 bp long.
 
 
-### Pol dataset
-Dataset of 42 pol sequences. Aligned in AliView using MUSCLE, trimmed ends and renamed sequence headers. Resulting alignment is 689 bp long.
+### Pol dataset 
+Dataset of 42 pol gene sequences. Aligned in AliView using MUSCLE, trimmed ends and renamed sequence headers. Resulting alignment is 689 bp long.
 
 
 ### Sequence headers
@@ -69,3 +69,7 @@ In format `<Genbank id>|<name>`.
 - Control group (from the Lafayette area) sequence names start with LA
 
 For technical replicates, sequences containing BCM in the name were sequenced at Baylor College of Medicine and sequences with MIC in the name were sequenced at the University of Michigan. 
+
+
+## H3N2 dataset
+Dataset of 86 aligned Influenza/A hemagglutinin (HA) gene sequences (1698 bp) from New York sampled over multiple flu seasons. The dataset is a subsample of the dataset used in Rambaut et al ([Science 2008](http://www.nature.com/nature/journal/v453/n7195/full/nature06945.html)).
