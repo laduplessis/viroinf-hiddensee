@@ -1,6 +1,26 @@
 # Datasets
 
-### (VIROINF - Workshop on analysis of viral NGS data & evolutionary history and co-phylogenetics)
+## EBOV dataset
+Dataset of 15 Zaïre Ebola virus (EBOV) genomes taken from [http://beast.community/ebov_local_clocks.html](http://beast.community/ebov_local_clocks.html), where the original references for the genomes can be found.
+
+Genomes were extracted from the BEAST 1.10 XML files using BEASTGen and then split into coding (cds) and non-coding (ig) regions using the gene annotations:
+
+- NP:		470-2689
+- VP35:	3129-4151
+- VP40:	4479-5459
+- GP:		6039-6923,6923-8068
+- VP30:	8509-9375
+- VP24:	10345-11100
+- L:		11581-18219 
+
+Instead of duplicating the frameshift position in GP a gap was inserted, to maintain the reading frame. 
+
+### CDS 
+Coding regions of the 15 EBOV genomes (14517 bp)
+
+### IG
+Non-coding regions of the 15 EBOV genomes (4449 bp)
+
 
 ## Dengue-4 dataset
 Dataset of 17 pre-aligned DENV-4 envelope protein sequences (1485 bp). Originally from Lanciotti, Gubler & Trent ([Journal of Gen Vir 1997](https://www.microbiologyresearch.org/content/journal/jgv/10.1099/0022-1317-78-9-2279)) and featured in Jombart et al ([Mol Ecol Res 2017](https://onlinelibrary.wiley.com/doi/abs/10.1111/1755-0998.12676a)) and Drummond & Rambaut ([BMC Evol Biol 2007](http://dx.doi.org/10.1186/1471-2148-7-214)).
