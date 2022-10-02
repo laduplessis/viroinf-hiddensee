@@ -1,2 +1,14 @@
 .DS_Store
 .Rproj.user
+.Rhistory
+*.Rproj
+*.aux
+*.bbl
+*.blg
+*.out
+main.log
+main.pdf
+*.run.xml
+*.toc
+*blx.bib
+*.trees
