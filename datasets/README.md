@@ -73,3 +73,21 @@ For technical replicates, sequences containing BCM in the name were sequenced at
 
 ## H3N2 dataset
 Dataset of 86 aligned Influenza/A hemagglutinin (HA) gene sequences (1698 bp) from New York sampled over multiple flu seasons. The dataset is a subsample of the dataset used in Rambaut et al ([Science 2008](http://www.nature.com/nature/journal/v453/n7195/full/nature06945.html)).
+
+## Alpha UK dataset
+Two alignments of SARS-CoV-2 genomes from the UK. All genomes and associated 
+metadata are available from https://www.cogconsortium.uk/priority-areas/data-linkage-analysis/public-data-analysis/.
+
+### Alpha
+Subsample of all Alpha (B.1.1.7) genomes from the UK that were sequenced between 
+1 August 2020 and 1 February 2021 (the oldest Alpha genome only dates from 20 September 2020). 
+We sampled 7 genomes at random from all genomes sequenced in every epiweek during this 
+period. For epiweeks where fewer than 7 genomes are available we used all 
+available genomes. This resulted in 154 genomes. 
+
+### Background
+subsampling all non-Alpha genomes from the UK that were sequenced between 
+1 August 2020 and 1 February 2021 (the oldest Alpha genome only dates from 20 September 2020). 
+We sampled 6 genomes at random from all genomes sequenced in every epiweek during this 
+period. For epiweeks where fewer than 6 genomes are available we used all 
+available genomes. This resulted in 160 genomes. 
