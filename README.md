@@ -40,6 +40,6 @@ The **two most important** programs to install are **R** and **BEAST2**! For eve
 |13:00 | Lunch     | Lunch    |
 |14:00 |           | Tutorial |
 |15:00 | Hike      | Q&A session |
-|16:00 |           | Tutoria     |
+|16:00 |           | Tutorial     |
 |17:00 |           |          |
 
