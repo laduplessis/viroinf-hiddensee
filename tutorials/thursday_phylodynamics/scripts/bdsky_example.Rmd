@@ -1,0 +1,328 @@
+---
+title: "Birth Death Skyline post-processing"
+author: "Louis du Plessis"
+date: '`r format(Sys.time(), "Last modified: %d %b %Y")`'
+output: html_document
+params:
+  logfile: "../precooked_runs/bdsky_condOnRoot_long_777.log"
+  priorfile: "../precooked_runs/bdsky_condOnRoot_sampleFromPrior_777.log"
+  startdate: "2020-01-01"
+  enddate: "2021-03-01"
+  gridsize: 100
+---
+
+This notebook steps through the post-processing of `bdsky_condOnRoot.xml`, the 
+Birth Death Skyline while conditioning on the root.
+
+
+```{r install-packages, eval=FALSE, echo=FALSE} 
+    # Install the required packages by evaluating this chunk
+
+    install.packages("devtools")
+    install.packages("lubridate")
+    install.packages("coda")
+    install.packages("RColorBrewer")
+    devtools::install_github("laduplessis/bdskytools")
+    devtools::install_github("laduplessis/beastio")
+ 
+```
+
+
+```{r setup, include=FALSE}
+
+    # Load the required packages and set global options 
+    library(lubridate)
+    library(coda)
+    library(bdskytools)
+    library(beastio)
+    library(RColorBrewer)
+
+    knitr::opts_chunk$set(echo = TRUE, fig.path="figs/", dev='png')
+
+    # Set up some colours
+    cols  <- list(blue   = RColorBrewer::brewer.pal(12,"Paired")[2], 
+                  green  = RColorBrewer::brewer.pal(12,"Paired")[4], 
+                  red    = RColorBrewer::brewer.pal(12,"Paired")[6], 
+                  orange = RColorBrewer::brewer.pal(12,"Paired")[8], 
+                  purple = RColorBrewer::brewer.pal(12,"Paired")[10], 
+                  gray   = "#777777",
+                  black  = "#000000",
+                  white  = "#FFFFFF")
+
+  set_alpha <- function(c, alpha=1.0) paste0(c,format(as.hexmode(round(alpha*255)), width=2))
+  
+  startdate <- ymd(params$startdate)
+  enddate   <- ymd(params$enddate)
+
+```
+
+# Load the trace file and check convergence
+
+We can load the log file using the `readLog()` function. 
+
+```{r load-data}
+    bdsky_trace   <- beastio::readLog(params$logfile, burnin=0.1)
+```
+
+With the log file loaded as a `coda::mcmc` object we can use functions from 
+the `coda` package to explore the trace. 
+
+```{r, eval=FALSE}
+    summary(bdsky_trace)
+    varnames(bdsky_trace)
+```
+
+We can use the `checkESS()` function to find which parameters have ESS < 200,
+
+```{r check-convergence}
+  beastio::checkESS(bdsky_trace)
+```
+
+or use the same function to plot the ESS values of all parameters.
+
+```{r plot-ESS, results='hide'}
+  beastio::checkESS(bdsky_trace,   cutoff=200, plot=TRUE, log='y', ylim=c(1,10000), title="All parameters", plot.grid=TRUE)
+```
+
+# Alpha $R_e$
+
+Next we can extract the $R_e$ parameter values for the Alpha alignment and 
+their HPDs. 
+
+```{r extract-alpha-Re}
+  Re_alpha <- beastio::getLogFileSubset(bdsky_trace, "reproductiveNumber_BDSKY_SerialCondRoot.alpha")
+  Re_alpha_hpd <- t(beastio::getHPDMedian(Re_alpha))
+```
+
+We can plot the raw $R_e$ HPD intervals. This is
+equivalent to the output in Tracer.
+
+```{r}
+    plotSkyline(1:10, Re_alpha_hpd, type='step', ylab="R")
+```
+
+In order to plot the smooth skyline we have to marginalise our
+$R_e$ estimates on a regular timegrid and calculate the
+HPD at each gridpoint. It is usually a good idea to use a grid with more
+cells than the dimension of $R_e$. To do this we first
+calculate the marginal posterior at every time of interest using the
+function `gridSkyline()` and then calculate the HPD for each of
+the finer time intervals. The times to grid the skyline on
+(`gridTimes_alpha`), refers to years in the past. Since we conditioned 
+on the root we have to use the tMRCA (tree height) as an anchor point. 
+If we didn't condition on the root we would have to use the origin parameter.
+
+```{r grid-alpha-Re}
+    tmrca_alpha      <- bdsky_trace[, "TreeHeight.alpha"]
+    gridTimes_alpha  <- seq(0, median(tmrca_alpha), length.out=params$gridsize)  
+    
+    Re_alpha_gridded <- mcmc(bdskytools::gridSkyline(Re_alpha, tmrca_alpha, gridTimes_alpha))
+    Re_alpha_gridded_hpd <- t(getHPDMedian(Re_alpha_gridded))
+```
+
+Now we are ready to plot the smooth skyline.
+
+```{r plot-alpha-Re}
+    times <- lubridate::decimal_date(enddate)-gridTimes_alpha
+    plotSkyline(times, Re_alpha_gridded_hpd, xlab="Date", ylab="Re")   
+```
+
+We can plot the gridded $R_e$ skyline (not its HPDs) for a
+few of the MCMC samples to see what it really looks like as the Markov
+chain samples parameters. Note that the intervals overlap between
+different posterior samples. This is because the tMRCA is different in
+each of the plotted samples. As we add more samples to the plot we start
+to see the smooth skyline appear.
+
+```{r plot-alpha-Re-traces}
+    plotSkyline(times, Re_alpha_gridded, type='steplines', traces=1, 
+                col=cols$blue,ylims=c(0,3.5), xlab="Time", ylab="R", main="1 random sample")
+    plotSkyline(times, Re_alpha_gridded, type='steplines', traces=10, 
+                    col=set_alpha(cols$blue,0.5),ylims=c(0,3.5), xlab="Time", ylab="R", main="10 random samples")
+    plotSkyline(times, Re_alpha_gridded, type='steplines', traces=100, 
+                    col=set_alpha(cols$blue,0.5),ylims=c(0,3.5), xlab="Time", ylab="R", main="100 random samples")
+    plotSkyline(times, Re_alpha_gridded, type='steplines', traces=1000, 
+                    col=set_alpha(cols$blue,0.1),ylims=c(0,3.5), xlab="Time", ylab="R", main="1000 random samples")
+
+```
+
+# Alpha sampling proportion
+
+We can do the same for the sampling proportion estimates for the Alpha 
+alignment. 
+
+```{r alpha-samplingProp}
+    samplingProp_alpha <- beastio::getLogFileSubset(bdsky_trace, "samplingProportion_BDSKY_SerialCondRoot.alpha")
+    samplingProp_alpha_gridded <- mcmc(bdskytools::gridSkyline(samplingProp_alpha, tmrca_alpha, gridTimes_alpha))
+    samplingProp_alpha_gridded_hpd <- t(getHPDMedian(samplingProp_alpha_gridded))
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_alpha, samplingProp_alpha_gridded_hpd, 
+                xlab="Date", ylab="Sampling proportion")   
+```
+
+# Background $R_e$ and sampling proportion
+
+And we can also extract and plot the skylines for the background alignment. 
+
+```{r background-Re}
+    tmrca_background      <- bdsky_trace[, "TreeHeight.background"]
+    Re_background         <- beastio::getLogFileSubset(bdsky_trace, "reproductiveNumber_BDSKY_SerialCondRoot.background")
+    gridTimes_background  <- seq(0, median(tmrca_background), length.out=params$gridsize)  
+    
+    Re_background_gridded <- mcmc(bdskytools::gridSkyline(Re_background, tmrca_background, gridTimes_background))
+    Re_background_gridded_hpd <- t(getHPDMedian(Re_background_gridded))
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_background, Re_background_gridded_hpd, xlab="Date", ylab="Re")   
+```
+
+```{r background-samplingProp}
+    samplingProp_background <- beastio::getLogFileSubset(bdsky_trace, "samplingProportion_BDSKY_SerialCondRoot.background")
+    
+    samplingProp_background_gridded <- mcmc(bdskytools::gridSkyline(samplingProp_background, tmrca_background, gridTimes_background))
+    samplingProp_background_gridded_hpd <- t(getHPDMedian(samplingProp_background_gridded))
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_background, samplingProp_background_gridded_hpd, xlab="Date", ylab="Sampling proportion")   
+```
+
+
+# Combined
+
+Finally, we can plot both Alpha and the background datasets on one set of axes for comparison.
+
+```{r combined}
+
+    par(mar=c(7,5,1,1))
+    xticks <- seq.Date(startdate, enddate, by='month')
+    plot(1, type='n', xlim=lubridate::decimal_date(c(startdate, enddate)), ylim=c(0,4), 
+         xlab='', ylab='Re', xaxt='n', las=1, xaxs='i', yaxs='i')
+    axis(1, at=lubridate::decimal_date(xticks), labels=xticks, las=2)
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_background, Re_background_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$blue, 0.5), col=cols$blue)   
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_alpha, Re_alpha_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$orange, 0.5), col=cols$orange)   
+    
+    abline(h = 1, lty=2, col=cols$red, lwd=2)
+    legend("topleft", legend=c("Alpha", "Background"), bty='n',
+           fill=set_alpha(c(cols$orange, cols$blue), 0.5), border=c(cols$orange, cols$blue))
+    
+    
+    plot(1, type='n', xlim=lubridate::decimal_date(c(startdate, enddate)), ylim=c(0,0.014), 
+         xlab='', ylab='Sampling Proportion', xaxt='n', las=1, xaxs='i', yaxs='i')
+    axis(1, at=lubridate::decimal_date(xticks), labels=xticks, las=2)
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_background, samplingProp_background_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$blue, 0.5), col=cols$blue)   
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_alpha, samplingProp_alpha_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$orange, 0.5), col=cols$orange)   
+    
+    legend("topleft", legend=c("Alpha", "Background"), bty='n',
+           fill=set_alpha(c(cols$orange, cols$blue), 0.5), border=c(cols$orange, cols$blue))
+
+    
+
+```
+
+
+# Compare to the prior
+
+Finally, we can load the trace where we sampled from the prior and compare the skylines.
+
+```{r load-prior}
+    prior_trace <- beastio::readLog(params$priorfile, burnin=0.1)
+
+    # Alpha
+    Re_alpha_prior <- beastio::getLogFileSubset(prior_trace, "reproductiveNumber_BDSKY_SerialCondRoot.alpha")
+
+    tmrca_alpha_prior      <- prior_trace[, "TreeHeight.alpha"]
+    gridTimes_alpha_prior  <- seq(0, median(tmrca_alpha_prior), length.out=params$gridsize)  
+    
+    Re_alpha_prior_gridded <- mcmc(bdskytools::gridSkyline(Re_alpha_prior, tmrca_alpha_prior, gridTimes_alpha_prior))
+    Re_alpha_prior_gridded_hpd <- t(getHPDMedian(Re_alpha_prior_gridded))
+
+    samplingProp_alpha_prior <- beastio::getLogFileSubset(prior_trace, "samplingProportion_BDSKY_SerialCondRoot.alpha")
+    samplingProp_alpha_prior_gridded <- mcmc(bdskytools::gridSkyline(samplingProp_alpha_prior, tmrca_alpha_prior, gridTimes_alpha_prior))
+    samplingProp_alpha_prior_gridded_hpd <- t(getHPDMedian(samplingProp_alpha_prior_gridded))
+    
+    # Background
+    Re_background_prior <- beastio::getLogFileSubset(prior_trace, "reproductiveNumber_BDSKY_SerialCondRoot.background")
+
+    tmrca_background_prior      <- prior_trace[, "TreeHeight.background"]
+    gridTimes_background_prior  <- seq(0, median(tmrca_background_prior), length.out=params$gridsize)  
+    
+    Re_background_prior_gridded <- mcmc(bdskytools::gridSkyline(Re_background_prior, tmrca_background_prior, gridTimes_background_prior))
+    Re_background_prior_gridded_hpd <- t(getHPDMedian(Re_background_prior_gridded))
+    
+    samplingProp_background_prior <- beastio::getLogFileSubset(prior_trace, "samplingProportion_BDSKY_SerialCondRoot.background")
+    samplingProp_background_prior_gridded <- mcmc(bdskytools::gridSkyline(samplingProp_background_prior, tmrca_background_prior, gridTimes_background_prior))
+    samplingProp_background_prior_gridded_hpd <- t(getHPDMedian(samplingProp_background_prior_gridded))
+```
+
+
+```{r prior-comparison}
+
+    par(mar=c(7,5,1,1))
+    xticks <- seq.Date(startdate, enddate, by='month')
+    
+    # Alpha Re
+    plot(1, type='n', xlim=lubridate::decimal_date(c(startdate, enddate)), ylim=c(0,4), 
+         xlab='', ylab='Re', xaxt='n', las=1, xaxs='i', yaxs='i')
+    axis(1, at=lubridate::decimal_date(xticks), labels=xticks, las=2)
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_alpha_prior, Re_alpha_prior_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$gray, 0.5), col=cols$gray)   
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_alpha, Re_alpha_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$orange, 0.5), col=cols$orange)   
+    
+    abline(h = 1, lty=2, col=cols$red, lwd=2)
+    legend("topleft", legend=c("Alpha posterior", "Alpha prior"), bty='n',
+           fill=set_alpha(c(cols$orange, cols$gray), 0.5), border=c(cols$orange, cols$blue))
+    
+    
+    # Background Re
+    plot(1, type='n', xlim=lubridate::decimal_date(c(startdate, enddate)), ylim=c(0,4), 
+     xlab='', ylab='Re', xaxt='n', las=1, xaxs='i', yaxs='i')
+    axis(1, at=lubridate::decimal_date(xticks), labels=xticks, las=2)
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_background_prior, Re_background_prior_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$gray, 0.5), col=cols$gray)   
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_background, Re_background_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$orange, 0.5), col=cols$orange)   
+    
+    abline(h = 1, lty=2, col=cols$red, lwd=2)
+    legend("topleft", legend=c("Background posterior", "Background prior"), bty='n',
+           fill=set_alpha(c(cols$orange, cols$gray), 0.5), border=c(cols$orange, cols$blue))
+    
+    # Alpha sampling proportion
+    plot(1, type='n', xlim=lubridate::decimal_date(c(startdate, enddate)), ylim=c(0,0.014), 
+     xlab='', ylab='Sampling proportion', xaxt='n', las=1, xaxs='i', yaxs='i')
+    axis(1, at=lubridate::decimal_date(xticks), labels=xticks, las=2)
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_alpha_prior, samplingProp_alpha_prior_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$gray, 0.5), col=cols$gray)   
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_alpha, samplingProp_alpha_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$orange, 0.5), col=cols$orange)   
+    
+    legend("topleft", legend=c("Alpha posterior", "Alpha prior"), bty='n',
+           fill=set_alpha(c(cols$orange, cols$gray), 0.5), border=c(cols$orange, cols$blue))
+    
+    
+    # Background sampling proportion
+    plot(1, type='n', xlim=lubridate::decimal_date(c(startdate, enddate)), ylim=c(0,0.014), 
+     xlab='', ylab='Sampling proportion', xaxt='n', las=1, xaxs='i', yaxs='i')
+    axis(1, at=lubridate::decimal_date(xticks), labels=xticks, las=2)
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_background_prior, samplingProp_background_prior_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$gray, 0.5), col=cols$gray)   
+    
+    plotSkyline(lubridate::decimal_date(enddate)-gridTimes_background, samplingProp_background_gridded_hpd, lwd=2,
+                xlab="", ylab="", add=TRUE, new=FALSE, axes=FALSE, fill=set_alpha(cols$orange, 0.5), col=cols$orange)   
+    
+    legend("topleft", legend=c("Background posterior", "Background prior"), bty='n',
+           fill=set_alpha(c(cols$orange, cols$gray), 0.5), border=c(cols$orange, cols$blue))
+```
+
