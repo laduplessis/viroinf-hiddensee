@@ -163,6 +163,15 @@ mt
 
 ################################################################################
 # f) Save the rooted trees for later use in Exercise 4.
+# ---- root the MP trees
+trees_ebov_cds_rooted$treeMLP <- root.phylo(trees_ebov_cds$treeMP,  
+                                    outgroup = c("KC242791_Bonduni_DRC_1977_06",
+                                    "KR063671_Yambuku_Mayinga_DRC_1976_10_01"), 
+                                    resolve.root = T)
+trees_ebov_ig_rooted$treeMP <- root.phylo(trees_ebov_ig$treeMP,  
+                                    outgroup = c("KC242791_Bonduni_DRC_1977_06",
+                                    "KR063671_Yambuku_Mayinga_DRC_1976_10_01"), 
+                                    resolve.root = T)
 # ---- root the ig ML trees
 trees_ebov_ig_rooted$treeML_K80 <- root.phylo(trees_ebov_ig$treeML_K80,  
                                     outgroup = c("KC242791_Bonduni_DRC_1977_06",
