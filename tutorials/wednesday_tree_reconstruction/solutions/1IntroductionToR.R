@@ -134,6 +134,9 @@ myGreatFunction(3, c("hello", "hi", "virus"), TRUE)
 myGreatFunction(strings = c("hello", "hi", "virus"), add_star = FALSE, 
                 how_often = 3)
 # ----- For-loops
+for(i in c(-2,1,-4,5)){
+  print(i)
+}
 for(i in 1:5){
   if(myMaxFunction(3,i)!=max(3,i)){
     print(paste("Oh no! Functions do not agree for i =",i))
@@ -159,9 +162,6 @@ for(i in 1:5){
 # if it contains the first pattern it gets the first color, etc.
 # Example: c("T","C","A","T") with pattern c("A","C") and colors 
 # c("red", "blue") the function should yield c("black","blue","red","black")
-myColsStrings <- function(strings, patterns, cols){
-  #insert your code here
-}
 myColsStrings <- function(strings, patterns, cols){
   output <- rep("black",length(strings))
   for(p in 1:length(patterns)){

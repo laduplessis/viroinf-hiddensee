@@ -123,6 +123,9 @@ myGreatFunction(3, c("hello", "hi", "virus"), TRUE)
 myGreatFunction(strings = c("hello", "hi", "virus"), add_star = FALSE, 
                 how_often = 3)
 # ----- For-loops
+for(i in c(-2,1,-4,5)){
+    print(i)
+}
 for(i in 1:5){
   if(myMaxFunction(3,i)!=max(3,i)){
     print(paste("Oh no! Functions do not agree for i =",i))
