@@ -52,6 +52,7 @@ trees_ebov_ig <- list()
 attr(trees_ebov_ig, "class") <- "multiPhylo"
 # ----- create the distance matrix (choose evolutionary model)
 dm_ebov_cds_JC  <- dist.dna(dna_ebov_cds, model = "JC69")
+dist.dna(dna_ebov_cds[1:3,], model = "JC69")
 trees_ebov_cds$treeNJ_JC <- NJ(dm_ebov_cds_JC)
 ape::plot.phylo(trees_ebov_cds$treeNJ_JC, type = "unrooted", 
                 cex=0.8, lab4ut = "axial")
