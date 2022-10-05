@@ -141,14 +141,10 @@ ape::plot.phylo(trees_ebov_cds$treeNJ_JC, main="CDS NJ tree (JC69)",
 ape::plot.phylo(trees_ebov_cds$treeMP, main="CDS MP tree", 
                 type = "unrooted", cex=0.6, lab4ut = "axial")
 par(mfrow=c(1,1),mar=c(5.1,4.1,4.1,2.1))
+# ------ MP cannot estimate edge lengths (MP tree is depicted ultrametric)
+ape::plot.phylo(trees_ebov_cds$treeMP, main="CDS MP tree",cex=0.6)
 RF.dist(trees_ebov_cds$treeNJ_JC, tree2=trees_ebov_cds$treeMP, 
-        check.labels=TRUE, rooted=FALSE) # only edge lengths different
-# ----- An improved algorithm to find the "optimal" MP tree is parsimony ratchet
-#       (Nixon 1999). We will not go into details here
-trees_ebov_cds$treeMPratched <- pratchet(align_ebov_cds, 
-                                         start=trees_ebov_cds$treeNJ_JC,
-                                         trace = 0, minit=100)
-parsimony(trees_ebov_cds$treeMPratched, align_ebov_cds) # no improvement
+        check.labels=TRUE, rooted=FALSE)
 #_______________________________________________________________________________
 # Task: Explore maximum parsimony. For example, try:
 # 1.) Compute the maximum parsimony scores for the other 3 distance-based trees.
@@ -157,24 +153,13 @@ parsimony(trees_ebov_cds$treeNJ_K80, data=align_ebov_cds, method = "fitch")
 # Ideas: ig sequences are shorter (approx one third), but only half MP score
 parsimony(trees_ebov_ig$treeNJ_JC, data=align_ebov_ig, method = "fitch") 
 parsimony(trees_ebov_ig$treeNJ_K80, data=align_ebov_ig, method = "fitch")
-# 2.) Compute the the MP tree for the non-coding sequences and compare the two
-#     MP trees for cds and ig and the respective NJ trees (JC).
+# 2.) Compute the the MP tree for the non-coding sequences and compare them.
 trees_ebov_ig$treeMP <- optim.parsimony(tree=trees_ebov_ig$treeNJ_JC, 
                                          data=align_ebov_ig, method = "fitch", 
                                          trace = 10, rearrangements = "SPR")
 parsimony(trees_ebov_ig$treeMP, data=align_ebov_ig, method = "fitch")
-par(mfrow=c(2,2),mar=c(1.1,2,2,2.8))
-ape::plot.phylo(trees_ebov_cds$treeNJ_JC, main="CDS NJ tree (JC69)", 
-                type = "unrooted", cex=0.6, lab4ut = "axial")
-ape::plot.phylo(trees_ebov_cds$treeMP, main="CDS MP tree", 
-                type = "unrooted", cex=0.6, lab4ut = "axial")
-ape::plot.phylo(trees_ebov_ig$treeNJ_JC, main="IG NJ tree (JC69)", 
-                type = "unrooted", cex=0.6, lab4ut = "axial")
-ape::plot.phylo(trees_ebov_ig$treeMP, main="IG MP tree", 
-                type = "unrooted", cex=0.6, lab4ut = "axial")
-par(mfrow=c(1,1),mar=c(5.1,4.1,4.1,2.1))
 RF.dist(trees_ebov_ig$treeNJ_JC, tree2=trees_ebov_ig$treeMP, 
-        check.labels=TRUE, rooted=FALSE) # only edge lengths different
+        check.labels=TRUE, rooted=FALSE)
 #_______________________________________________________________________________
 
 
@@ -227,7 +212,7 @@ trees_ebov_ig$treeML_GTRGI  <- fitGTRGI_opt$tree
 RF.dist(append(trees_ebov_cds,trees_ebov_ig),
         check.labels=TRUE, rooted=FALSE) # there are differences
 # 4.) Root two trees with the biggest distance as before and plot them to 
-#     observe the differences
+#     observe the differences.
 trees_ebov_cds_rooted$treeML_K80 <- root.phylo(trees_ebov_cds$treeML_K80,  
                                     outgroup = c("KC242791_Bonduni_DRC_1977_06",
                                     "KR063671_Yambuku_Mayinga_DRC_1976_10_01"), 
@@ -240,9 +225,15 @@ RF.dist(trees_ebov_cds_rooted$treeML_GTRGI, trees_ebov_cds_rooted$treeML_K80,
         check.labels=TRUE, rooted=TRUE)
 par(mfrow=c(1,2),mar=c(1.1,2,2,2.8))
 ape::plot.phylo(trees_ebov_cds_rooted$treeML_K80, main="CDS ML K80 tree", 
-                cex=0.6)
+                cex=0.6, type="cladogram",
+                tip.color = myColsStrings(
+                  trees_ebov_cds_rooted$treeML_K80$tip.label, 
+                  c("HQ"),c("red")))
 ape::plot.phylo(trees_ebov_cds_rooted$treeML_GTRGI, main="CDS ML GTR+I tree", 
-                cex=0.6)
+                cex=0.6, type="cladogram",
+                tip.color = myColsStrings(
+                  trees_ebov_cds_rooted$treeML_K80$tip.label, 
+                  c("HQ"),c("red")))
 par(mfrow=c(1,1),mar=c(5.1,4.1,4.1,2.1))
 #_______________________________________________________________________________
 

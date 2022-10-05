@@ -16,7 +16,7 @@ library("phangorn")
 #_______________________________________________________________________________
 # Task: Your main task is to find the evidence for the criminal case.
 # Here are some potential steps you might want to 
-# 1.) Load the HIV-1 pol and env datasets.
+# 1.) Load the HIV-1 pol and env datasets ("hiv_env.fasta" and "hiv_pol.fasta").
 # Alignment HIV env
 align_hiv_env <- NULL # replace NULL with your code
 

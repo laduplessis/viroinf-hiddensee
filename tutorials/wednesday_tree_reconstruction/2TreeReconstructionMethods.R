@@ -109,20 +109,15 @@ ape::plot.phylo(trees_ebov_cds$treeNJ_JC, main="CDS NJ tree (JC69)",
 ape::plot.phylo(trees_ebov_cds$treeMP, main="CDS MP tree", 
                 type = "unrooted", cex=0.6, lab4ut = "axial")
 par(mfrow=c(1,1),mar=c(5.1,4.1,4.1,2.1))
+# ------ MP cannot estimate edge lengths (MP tree is depicted ultrametric)
+ape::plot.phylo(trees_ebov_cds$treeMP, main="CDS MP tree",cex=0.6)
 RF.dist(trees_ebov_cds$treeNJ_JC, tree2=trees_ebov_cds$treeMP, 
-        check.labels=TRUE, rooted=FALSE) # only edge lengths different
-# ----- An improved algorithm to find the "optimal" MP tree is parsimony ratchet
-#       (Nixon 1999). We will not go into details here
-trees_ebov_cds$treeMPratched <- pratchet(align_ebov_cds, 
-                                         start=trees_ebov_cds$treeNJ_JC,
-                                         trace = 0, minit=100)
-parsimony(trees_ebov_cds$treeMPratched, align_ebov_cds) # no improvement
+        check.labels=TRUE, rooted=FALSE)
 #_______________________________________________________________________________
 # Task: Explore maximum parsimony. For example, try:
 # 1.) Compute the maximum parsimony scores for the other 3 distance-based trees.
 #     Can you explain the differences and similarities?
-# 2.) Compute the the MP tree for the non-coding sequences and compare the two
-#     MP trees for cds and ig and the respective NJ trees (JC).
+# 2.) Compute the the MP tree for the non-coding sequences and compare them.
 #_______________________________________________________________________________
 
 
