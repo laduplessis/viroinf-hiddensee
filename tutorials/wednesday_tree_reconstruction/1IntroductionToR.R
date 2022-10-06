@@ -15,7 +15,6 @@
 # Create your own directory for the tutorial and copy all R scripts!
 # Now, you can set your working directory there (edit the example path).
 setwd("C:\\Users\\Sophie\\Desktop\\ViroInfTutorial")
-
 # Useful shortcuts to remember:
 # Execute next command:   Ctrl+Enter (Windows/Linux)  Cmd+Return (Mac)
 # Create "<-" symbol:     Alt+- (Windows/Linux)       Option+- (Mac)
@@ -29,6 +28,7 @@ setwd("C:\\Users\\Sophie\\Desktop\\ViroInfTutorial")
 a <- 2      
 b <- "hello"
 c3_Po <- 5.7*sqrt(12)
+a+c3_Po
 # ----- we can create vectors with c(element1, element2, ...)
 my_vec <- c("hello", "HI", "high", "virus") 
 rep_vec <- rep(c("Group A", "Group B"), 10)
@@ -48,6 +48,7 @@ paste(my_vec, collapse = "', '")
 #_______________________________________________________________________________
 # Task: Experiment with the variables. For example, try...
 # 1.) creating a vector containing strings and numbers,
+test <- c(2, 3, -4, "test")
 # 2.) filtering all of the following labels of dna sequences to get the ones 
 # from the philippines,
 LABS <- c('D4Brazi82', 'D4ElSal83', 'D4ElSal94', 'D4Indon76', 'D4Indon77', 
