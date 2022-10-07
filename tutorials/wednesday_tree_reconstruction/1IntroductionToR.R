@@ -39,7 +39,7 @@ my_vec[1:2]
 my_vec[c(4,3,1,2)]
 length(my_vec)
 # ----- these are some functions to deal with strings
-grep(pattern = "i", my_vec)
+grep(pattern = "i", my_vec, ignore.case = TRUE)
 grepl(pattern = "i", my_vec)
 paste("hello","hi", sep = " ")
 paste0("hello","hi")
@@ -63,7 +63,8 @@ LABS <- c('D4Brazi82', 'D4ElSal83', 'D4ElSal94', 'D4Indon76', 'D4Indon77',
 # b) Trees and lists (format "phylo")
 # the ape package can give us a random tree (generated with Yule process)
 mytree <- ape::rtree(n=5, rooted = TRUE)
-ape::plot.phylo(mytree)
+mytree2 <-  ape::rtree(n=10, rooted = TRUE)
+ape::plot.phylo(mytree, type = "cladogram")
 # access the parts of the tree:
 mytree$edge
 mytree$tip.label
@@ -79,7 +80,7 @@ moretrees <- list(firsttree = ape::rtree(n=3, rooted = T),
                   thirdtree = ape::rtree(n=16, rooted = T))
 attr(moretrees, "class") <- "multiPhylo"
 moretrees$firsttree
-moretrees[[1]]
+moretrees[[2]]
 #_______________________________________________________________________________
 # Task: Experiment with trees and lists. For example, try...
 # 1.) experimenting with different numbers of leaves.
@@ -152,6 +153,13 @@ LABS <- c('D4Brazi82', 'D4ElSal83', 'D4ElSal94', 'D4Indon76', 'D4Indon77',
           'D4Tahiti85', 'D4Thai63', 'D4Thai78', 'D4Thai84')
 myColsStrings(strings = LABS, patterns = c("Indon","Tahiti"), 
              cols = c("orange","green"))
+set.seed(42); MYTREE <- ape::rtree(n=17, rooted = T)
+MYTREE$tip.label <- LABS
+ape::plot.phylo(MYTREE, type = "cladogram", 
+                tip.color = myColsStrings(strings = MYTREE$tip.label, 
+                                          patterns = c("Indon","Tahiti"), 
+                                          cols = c("orange","green")), 
+                font = 2, cex=1)
 #_______________________________________________________________________________
 
 
@@ -170,9 +178,9 @@ myresults2 <- sapply(c(-4,-2,0,2,4), FUN = function(x){myMaxFunction(3,x)})
 myresults2
 myresults1==myresults2
 # ----- simple plot
-plot(x=myvalues, y=myresults1, main="Example plot", xlab="Test values", 
+plot(x=myvalues, y=myresults2, main="Example plot", xlab="Test values", 
      ylab="Maximum of 3 and test value")
-lines(x=myvalues, y=myresults1)
+lines(x=myvalues, y=myresults2)
 #_______________________________________________________________________________
 # Task: Experiment with all of this. For example, try:
 # 1.) Use lapply (has the same usage as sapple but saves all results in a list)

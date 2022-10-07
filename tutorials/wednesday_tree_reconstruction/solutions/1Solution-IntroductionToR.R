@@ -56,9 +56,10 @@ LABS <- c('D4Brazi82', 'D4ElSal83', 'D4ElSal94', 'D4Indon76', 'D4Indon77',
             'D4Philip84', 'D4PRico86', 'D4SLanka78', 'D4Tahiti79', 
             'D4Tahiti85', 'D4Thai63', 'D4Thai78', 'D4Thai84')
 LABS[grep("Philip", LABS, ignore.case = TRUE)]
+grep("Philip", LABS, ignore.case = TRUE, value = TRUE)
 # 3.) accessing the last two elements of the LABS vector,
 l <- length(LABS)
-vec[(l-1):l]
+LABS[(l-1):l]
 # 4.) and creating a variable containing the path to the dengue data set.
 dengue_path <- paste0("C:\\Users\\Sophie\\Documents\\GitHub\\",
                       "hiddensee-datasets\\datasets\\dengue\\",
@@ -92,7 +93,7 @@ moretrees[[1]]
 mytree <- ape::rtree(n=5, rooted = TRUE)
 # 2.) setting rooted=FALSE and observing the difference 
 # (plot with type="unrooted", "fan" or "radial).
-mytree <- ape::rtree(n=3, rooted = F)
+mytree <- ape::rtree(n=10, rooted = F)
 ape::plot.phylo(mytree, type = "unrooted")
 # 3.) plotting the next tree (MYTREE) as a cladogram with half of the labels 
 # colored in red, the other half in blue, larger text size and bold letters
@@ -106,7 +107,7 @@ ape::plot.phylo(MYTREE, type = "cladogram",
 ################################################################################
 # c) Functions, if-else
 # ------ Functions and if-else
-if(3>4){ 
+if(3>2){ 
   print("hello")
 }else{
   print("bye")

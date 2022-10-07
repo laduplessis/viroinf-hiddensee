@@ -52,7 +52,7 @@ trees_ebov_ig <- list()
 attr(trees_ebov_ig, "class") <- "multiPhylo"
 # ----- create the distance matrix (choose evolutionary model)
 dm_ebov_cds_JC  <- dist.dna(dna_ebov_cds, model = "JC69")
-dist.dna(dna_ebov_cds[1:3,], model = "JC69")
+#dist.dna(dna_ebov_cds[1:3,], model = "JC69")
 trees_ebov_cds$treeNJ_JC <- NJ(dm_ebov_cds_JC)
 ape::plot.phylo(trees_ebov_cds$treeNJ_JC, type = "unrooted", 
                 cex=0.8, lab4ut = "axial")
@@ -104,6 +104,7 @@ trees_ebov_cds_rooted$treeNJ_JC <- root.phylo(trees_ebov_cds$treeNJ_JC,
                                 outgroup = c("KC242791_Bonduni_DRC_1977_06",
                                     "KR063671_Yambuku_Mayinga_DRC_1976_10_01"), 
                                 resolve.root = T)
+ape::plot.phylo(trees_ebov_cds$treeNJ_JC)
 ape::plot.phylo(trees_ebov_cds_rooted$treeNJ_JC)
 is.rooted.phylo(trees_ebov_cds_rooted$treeNJ_JC)
 # 2.) Similarly root the other three trees.
